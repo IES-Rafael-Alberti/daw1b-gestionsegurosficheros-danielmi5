@@ -44,7 +44,7 @@ class SeguroVida : Seguro {
         private var numPolizasAuto: Int = 800000
 
         fun crearSeguro(datos: List<String>): SeguroVida {
-            when (datos.size) {
+            return when (datos.size) {
                 5 -> SeguroVida(datos[0], datos[1].toDouble(), LocalDate.parse(datos[2]), Riesgo.getRiesgo(datos[3]), datos[4].toDouble())
                 6 -> SeguroVida(datos[0].toInt(), datos[1], datos[2].toDouble(), LocalDate.parse(datos[3]), Riesgo.getRiesgo(datos[4]), datos[5].toDouble())
                 else -> crearSeguro(datos) //TODO controlar las excepciones en consola
