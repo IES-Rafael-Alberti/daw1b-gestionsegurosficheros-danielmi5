@@ -1,5 +1,6 @@
 package model
 
+
 enum class Cobertura(val desc: String) {
     TERCEROS("Terceros"),
     TERCEROS_AMPLIADO("Terceros +"),
@@ -11,14 +12,11 @@ enum class Cobertura(val desc: String) {
 
     companion object {
         fun getCobertura(valor: String): Cobertura {
-            return when (valor.uppercase().trim()) {
-                "TERCEROS_AMPLIADO" -> TERCEROS_AMPLIADO
-                "FRANQUICIA_200" -> FRANQUICIA_200
-                "FRANQUICIA_300" -> FRANQUICIA_300
-                "FRANQUICIA_400" -> FRANQUICIA_400
-                "FRANQUICIA_500" -> FRANQUICIA_500
-                "TODO_RIESGO" -> TODO_RIESGO
-                else -> TERCEROS
+            try {
+                val cobertura = Cobertura.valueOf(valor.uppercase().replace(" ",""))
+                return cobertura
+            } catch (e: IllegalArgumentException) {
+                return TERCEROS
             }
         }
     }

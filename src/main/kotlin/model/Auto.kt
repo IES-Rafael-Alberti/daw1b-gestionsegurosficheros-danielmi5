@@ -5,11 +5,13 @@ enum class Auto {
 
     companion object {
         fun getAuto(valor: String): Auto {
-            return when (valor.uppercase().trim()) {
-                "MOTO" -> MOTO
-                "CAMION" -> CAMION
-                else -> COCHE
+            try {
+                val auto = Auto.valueOf(valor.uppercase().replace(" ",""))
+                return auto
+            } catch (e: IllegalArgumentException) {
+                return COCHE
             }
+
         }
     }
 }

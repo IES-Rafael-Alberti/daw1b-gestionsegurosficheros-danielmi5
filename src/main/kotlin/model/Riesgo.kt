@@ -1,5 +1,7 @@
 package model
 
+import model.Auto.COCHE
+
 enum class Riesgo(val interesAplicado: Double) {
     BAJO(2.0),
     MEDIO(5.0),
@@ -7,10 +9,11 @@ enum class Riesgo(val interesAplicado: Double) {
 
     companion object {
         fun getRiesgo(valor: String): Riesgo {
-            return when (valor.uppercase()) {
-                "BAJO" -> BAJO
-                "ALTO" -> ALTO
-                else -> MEDIO
+            try {
+                val riesgo = Riesgo.valueOf(valor.uppercase().replace(" ",""))
+                return riesgo
+            } catch (e: IllegalArgumentException) {
+                return MEDIO
             }
         }
     }

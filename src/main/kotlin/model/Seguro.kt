@@ -1,13 +1,9 @@
 package model
 
-abstract class Seguro(private val numPoliza: Int, private val dniTitular: String, protected val importe: Double) : IExportable {
+abstract class Seguro(val numPoliza: Int, private val dniTitular: String, protected val importe: Double) : IExportable {
 
     abstract fun calcularImporteAnioSiguiente(interes: Double): Double
     abstract fun tipoSeguro(): String
-
-    fun comprobarNumPoliza(numPoliza: Int): Boolean {
-        return this.numPoliza == numPoliza
-    }
 
     override fun serializar(separador: String): String {
         return "$numPoliza$separador$dniTitular$separador$importe"
@@ -25,6 +21,5 @@ abstract class Seguro(private val numPoliza: Int, private val dniTitular: String
         if (other is Seguro) {
             return if (this.numPoliza == other.numPoliza) true else false
         } else return false
-
     }
 }

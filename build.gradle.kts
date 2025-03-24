@@ -19,10 +19,10 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(22) // Asegura que se usa la misma versión para Kotlin y Java
+    jvmToolchain(21) // Asegura que se usa la misma versión para Kotlin y Java
 }
 
 tasks.withType<JavaCompile> {
-    sourceCompatibility = "22"
-    targetCompatibility = "22"
+    sourceCompatibility = "21"
+    targetCompatibility = "21"
 }

@@ -31,7 +31,7 @@ class SeguroVida : Seguro {
     }
 
     override fun serializar(separador: String): String {
-        return "${super.serializar()}$separador$fechaNac$separador$nivelRiesgo$separador$indemnizacion"
+        return "${super.serializar(";")}$separador$fechaNac$separador$nivelRiesgo$separador$indemnizacion"
     }
 
     override fun toString(): String {
@@ -46,11 +46,7 @@ class SeguroVida : Seguro {
         const val PORCENTAJE_INCREMENTO_POR_ANIO = 0.05
 
         fun crearSeguro(datos: List<String>): SeguroVida {
-            return when (datos.size) {
-                5 -> SeguroVida(datos[0], datos[1].toDouble(), LocalDate.parse(datos[2]), Riesgo.getRiesgo(datos[3]), datos[4].toDouble())
-                6 -> SeguroVida(datos[0].toInt(), datos[1], datos[2].toDouble(), LocalDate.parse(datos[3]), Riesgo.getRiesgo(datos[4]), datos[5].toDouble())
-                else -> crearSeguro(datos) //TODO controlar las excepciones en consola
-            }
+            return SeguroVida(datos[0].toInt(), datos[1], datos[2].toDouble(), LocalDate.parse(datos[3]), Riesgo.getRiesgo(datos[4]), datos[5].toDouble()) //TODO controlar las excepciones en consola
         }
     }
 }

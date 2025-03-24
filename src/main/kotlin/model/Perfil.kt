@@ -1,5 +1,6 @@
 package model
 
+
 enum class Perfil {
       ADMIN,
     GESTION,
@@ -7,10 +8,11 @@ enum class Perfil {
 
     companion object {
         fun getPerfil(valor: String = ""): Perfil {
-            return when (valor.uppercase().trim()) {
-                "ADMIN" -> ADMIN
-                "GESTION" -> GESTION
-                else -> CONSULTA
+            try {
+                val perfil = Perfil.valueOf(valor.uppercase().replace(" ",""))
+                return perfil
+            } catch (e: IllegalArgumentException) {
+                return CONSULTA
             }
         }
     }

@@ -36,8 +36,9 @@ class SeguroAuto : Seguro {
     }
 
     override fun serializar(separador: String): String {
-        return "${super.serializar()}$separador$descripcion$separador$combustible$separador$tipoAuto$separador$cobertura$separador$asistenciaCarretera$separador$numPartes"
+        return "${super.serializar(";")}$separador$descripcion$separador$combustible$separador$tipoAuto$separador$cobertura$separador$asistenciaCarretera$separador$numPartes"
     }
+
 
     override fun toString(): String {
         val nombreClase = tipoSeguro()
@@ -51,11 +52,10 @@ class SeguroAuto : Seguro {
         const val PORCENTAJE_INCREMENTO_PARTES = 2
 
         fun crearSeguro(datos: List<String>): SeguroAuto {
-            return when (datos.size) {
-                8 -> SeguroAuto(datos[0], datos[1].toDouble(), datos[2], datos[3].toDouble(), Auto.getAuto(datos[4]), Cobertura.getCobertura(datos[5]), datos[6].toBoolean(), datos[7].toInt())
-                9 -> SeguroAuto(datos[0].toInt(), datos[1], datos[2].toDouble(), datos[3], datos[4].toDouble(), Auto.getAuto(datos[5]), Cobertura.getCobertura(datos[6]), datos[7].toBoolean(), datos[8].toInt())
-                else -> crearSeguro(datos) //TODO controlar las excepciones en consola
-            }
+            return SeguroAuto(datos[0].toInt(), datos[1], datos[2].toDouble(), datos[3], datos[4].toDouble(), Auto.getAuto(datos[5]), Cobertura.getCobertura(datos[6]), datos[7].toBoolean(), datos[8].toInt())
+
+             //TODO controlar las excepciones en consola
+
         }
     }
 }

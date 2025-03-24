@@ -34,7 +34,7 @@ class SeguroHogar : Seguro {
     }
 
     override fun serializar(separador: String): String {
-        return "${super.serializar()}$separador$metrosCuadrados$separador$valorContenido$separador$direccion$separador$anioConstruccion"
+        return "${super.serializar(";")}$separador$metrosCuadrados$separador$valorContenido$separador$direccion$separador$anioConstruccion"
     }
 
     override fun toString(): String {
@@ -50,11 +50,8 @@ class SeguroHogar : Seguro {
         const val CICLO_ANIOS_INCREMENTO = 5
 
         fun crearSeguro(datos: List<String>): SeguroHogar {
-            return when (datos.size){
-                6 -> SeguroHogar(datos[0], datos[1].toDouble(), datos[2].toDouble(), datos[3].toDouble(), datos[4], datos[5].toInt())
-                7 -> SeguroHogar(datos[0].toInt(), datos[1], datos[2].toDouble(), datos[3].toDouble(), datos[4].toDouble(), datos[5], datos[6].toInt(),)
-                else -> crearSeguro(datos) //TODO controlar las excepciones en consola
-            }
+            return SeguroHogar(datos[0].toInt(), datos[1], datos[2].toDouble(), datos[3].toDouble(), datos[4].toDouble(), datos[5], datos[6].toInt(),)
+            //TODO controlar las excepciones en consola
         }
     }
 }
