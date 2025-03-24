@@ -3,7 +3,7 @@ package data
 import model.Perfil
 import model.Usuario
 
-class RepoUsuariosMem : IRepoUsuarios {
+open class RepoUsuariosMem : IRepoUsuarios {
     private val listaUsuarios = mutableListOf<Usuario>()
 
     override fun agregar(usuario: Usuario): Boolean {
