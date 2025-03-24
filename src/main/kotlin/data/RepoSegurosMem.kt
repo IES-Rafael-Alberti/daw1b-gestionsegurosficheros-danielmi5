@@ -10,10 +10,7 @@ class RepoSegurosMem : IRepoSeguros {
     }
 
     override fun buscar(numPoliza: Int): Seguro? {
-        listaSeguros.forEach {
-            if (it.comprobarNumPoliza(numPoliza)) return it
-        }
-        return null
+        return listaSeguros.find { it.numPoliza == numPoliza }
     }
 
     override fun eliminar(seguro: Seguro): Boolean {
@@ -21,12 +18,8 @@ class RepoSegurosMem : IRepoSeguros {
     }
 
     override fun eliminar(numPoliza: Int): Boolean {
-        listaSeguros.forEach {
-            if (it.comprobarNumPoliza(numPoliza)) {
-                return listaSeguros.remove(it)
-            }
-        }
-        return false
+        val seguro = buscar(numPoliza)
+        return if (seguro != null) listaSeguros.remove(seguro) else false
     }
 
     override fun obtenerTodos(): List<Seguro> {

@@ -7,34 +7,32 @@ class RepoUsuariosMem : IRepoUsuarios {
     private val listaUsuarios = mutableListOf<Usuario>()
 
     override fun agregar(usuario: Usuario): Boolean {
-        return listaUsuarios.add(usuario)
+        return if (buscar(usuario.nombre) != null) listaUsuarios.add(usuario) else false
     }
 
-    override fun buscar(nombre: String): Usuario? {
-        listaUsuarios.forEach {
-            if (it.nombre == nombre) return it
-        }
-        return null
+    override fun buscar(nombreUsuario: String): Usuario? {
+        return listaUsuarios.find { it.nombre == nombreUsuario }
     }
 
     override fun eliminar(usuario: Usuario): Boolean {
         return listaUsuarios.remove(usuario)
     }
 
-    override fun eliminar(nombre: String): Boolean {
-        listaUsuarios.forEach {
-            if (it.nombre == nombre) {
-                return listaUsuarios.remove(it)
-            }
-        }
-        return false
+    override fun eliminar(nombreUsuario: String): Boolean {
+        val usuario = buscar(nombreUsuario)
+        return if (usuario != null) listaUsuarios.remove(usuario) else false
     }
 
     override fun obtenerTodos(): List<Usuario> {
         return listaUsuarios.toList()
     }
 
-    override fun obtener(tipoUsuario: String): List<Usuario> {
-        return listaUsuarios.filter { it.perfil == Perfil.getPerfil(tipoUsuario) }
+    override fun obtener(perfil: Perfil): List<Usuario> {
+        return listaUsuarios.filter { it.perfil == perfil }
+    }
+
+    override fun cambiarClave(usuario: Usuario, nuevaClave: String): Boolean {
+        usuario.cambiarClave(nuevaClave)
+        return true
     }
 }
