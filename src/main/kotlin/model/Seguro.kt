@@ -9,8 +9,8 @@ abstract class Seguro(private val numPoliza: Int, private val dniTitular: String
         return this.numPoliza == numPoliza
     }
 
-    override fun serializar(): String {
-        return "$numPoliza;$dniTitular;$importe"
+    override fun serializar(separador: String): String {
+        return "$numPoliza$separador$dniTitular$separador$importe"
     }
 
     override fun toString(): String {

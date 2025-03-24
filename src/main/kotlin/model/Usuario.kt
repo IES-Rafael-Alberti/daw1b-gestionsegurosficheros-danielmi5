@@ -1,6 +1,9 @@
 package model
 
-class Usuario(val nombre: String, var clave: String, val perfil: Perfil) : IExportable {
+class Usuario(val nombre: String, clave: String, val perfil: Perfil) : IExportable {
+    var clave = clave
+        private set
+
     fun verificarClave(claveEncriptada: String): Boolean {
         return clave == claveEncriptada
     }
@@ -9,7 +12,7 @@ class Usuario(val nombre: String, var clave: String, val perfil: Perfil) : IExpo
         clave = nuevaClaveEncriptada
     }
 
-    override fun serializar(): String = "$nombre;$clave;$perfil"
+    override fun serializar(separador: String): String = "$nombre$separador$clave$separador$perfil"
 
     companion object {
         val nombreUsados = mutableListOf<String>()

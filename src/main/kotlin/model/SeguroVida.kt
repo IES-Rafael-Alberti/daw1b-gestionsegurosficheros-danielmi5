@@ -8,7 +8,7 @@ class SeguroVida : Seguro {
     private val indemnizacion: Double
 
 
-    constructor(dniTitular: String, importe: Double, fechaNac: LocalDate, nivelRiesgo: Riesgo, indemnizacion: Double) : super(++numPolizasAuto, dniTitular, importe) {
+    constructor(dniTitular: String, importe: Double, fechaNac: LocalDate, nivelRiesgo: Riesgo, indemnizacion: Double) : super(++numPolizasVida, dniTitular, importe) {
         this.fechaNac = fechaNac
         this.nivelRiesgo = nivelRiesgo
         this.indemnizacion = indemnizacion
@@ -22,7 +22,7 @@ class SeguroVida : Seguro {
 
     override fun calcularImporteAnioSiguiente(interes: Double): Double {
         val edad = LocalDate.now().year - fechaNac.year
-        val interesResidual = edad * 0.05
+        val interesResidual = edad * PORCENTAJE_INCREMENTO_POR_ANIO
         return importe * (((interes + interesResidual + nivelRiesgo.interesAplicado) / 100) + 1)
     }
 
@@ -30,8 +30,8 @@ class SeguroVida : Seguro {
         return this::class.simpleName ?: "Desconocido"
     }
 
-    override fun serializar(): String {
-        return "${super.serializar()};$fechaNac;$nivelRiesgo;$indemnizacion"
+    override fun serializar(separador: String): String {
+        return "${super.serializar()}$separador$fechaNac$separador$nivelRiesgo$separador$indemnizacion"
     }
 
     override fun toString(): String {
@@ -41,7 +41,9 @@ class SeguroVida : Seguro {
     }
 
     companion object {
-        private var numPolizasAuto: Int = 800000
+        private var numPolizasVida: Int = 800000
+
+        const val PORCENTAJE_INCREMENTO_POR_ANIO = 0.05
 
         fun crearSeguro(datos: List<String>): SeguroVida {
             return when (datos.size) {

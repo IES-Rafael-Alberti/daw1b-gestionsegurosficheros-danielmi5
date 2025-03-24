@@ -27,7 +27,7 @@ class SeguroAuto : Seguro {
     }
 
     override fun calcularImporteAnioSiguiente(interes: Double): Double {
-        val interesResidual = numPartes * 2
+        val interesResidual = numPartes * PORCENTAJE_INCREMENTO_PARTES
         return importe * (((interes + interesResidual) / 100) + 1)
     }
 
@@ -35,8 +35,8 @@ class SeguroAuto : Seguro {
         return this::class.simpleName ?: "Desconocido"
     }
 
-    override fun serializar(): String {
-        return "${super.serializar()};$descripcion;$combustible;$tipoAuto;$cobertura;$asistenciaCarretera;$numPartes"
+    override fun serializar(separador: String): String {
+        return "${super.serializar()}$separador$descripcion$separador$combustible$separador$tipoAuto$separador$cobertura$separador$asistenciaCarretera$separador$numPartes"
     }
 
     override fun toString(): String {
@@ -47,6 +47,8 @@ class SeguroAuto : Seguro {
 
     companion object {
         private var numPolizasAuto: Int = 400000
+
+        const val PORCENTAJE_INCREMENTO_PARTES = 2
 
         fun crearSeguro(datos: List<String>): SeguroAuto {
             return when (datos.size) {

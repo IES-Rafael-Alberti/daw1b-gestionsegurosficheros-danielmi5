@@ -8,7 +8,7 @@ class SeguroHogar : Seguro {
     private val direccion: String
     private val anioConstruccion: Int
 
-    constructor(dniTitular: String, importe: Double, metrosCuadrados: Double, valorContenido: Double, direccion: String, anioConstruccion: Int) : super(++numPolizasAuto, dniTitular, importe) {
+    constructor(dniTitular: String, importe: Double, metrosCuadrados: Double, valorContenido: Double, direccion: String, anioConstruccion: Int) : super(++numPolizasHogar, dniTitular, importe) {
         this.metrosCuadrados = metrosCuadrados
         this.valorContenido = valorContenido
         this.direccion = direccion
@@ -25,7 +25,7 @@ class SeguroHogar : Seguro {
 
     override fun calcularImporteAnioSiguiente(interes: Double): Double {
         val aniosAntiguedad = LocalDate.now().year - anioConstruccion
-        val interesResidual = (aniosAntiguedad / 5).toInt() * 0.02
+        val interesResidual = (aniosAntiguedad / CICLO_ANIOS_INCREMENTO).toInt() * PORCENTAJE_INCREMENTO_ANIOS
         return importe * (((interes + interesResidual) / 100) + 1)
     }
 
@@ -33,8 +33,8 @@ class SeguroHogar : Seguro {
         return this::class.simpleName ?: "Desconocido"
     }
 
-    override fun serializar(): String {
-        return "${super.serializar()};$metrosCuadrados;$valorContenido;$direccion;$anioConstruccion"
+    override fun serializar(separador: String): String {
+        return "${super.serializar()}$separador$metrosCuadrados$separador$valorContenido$separador$direccion$separador$anioConstruccion"
     }
 
     override fun toString(): String {
@@ -44,7 +44,10 @@ class SeguroHogar : Seguro {
     }
 
     companion object {
-        private var numPolizasAuto: Int = 100000
+        private var numPolizasHogar: Int = 100000
+
+        const val PORCENTAJE_INCREMENTO_ANIOS = 0.02
+        const val CICLO_ANIOS_INCREMENTO = 5
 
         fun crearSeguro(datos: List<String>): SeguroHogar {
             return when (datos.size){
