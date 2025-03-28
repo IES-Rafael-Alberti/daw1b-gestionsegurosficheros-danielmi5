@@ -10,7 +10,7 @@ interface IServSeguros {
     fun contratarSeguroHogar(
         dniTitular: String,
         importe: Double,
-        metrosCuadrados: Int,
+        metrosCuadrados: Double,
         valorContenido: Double,
         direccion: String,
         anioConstruccion: Int
@@ -20,7 +20,7 @@ interface IServSeguros {
         dniTitular: String,
         importe: Double,
         descripcion: String,
-        combustible: String,
+        combustible: Double,
         tipoAuto: Auto,
         cobertura: Cobertura,
         asistenciaCarretera: Boolean,
