@@ -2,32 +2,51 @@ package utils
 import java.io.File
 import model.IExportable
 import model.Seguro
+import ui.IEntradaSalida
+import java.io.IOException
 
 
-class Ficheros : IUtilFicheros {
+class Ficheros(val ui: IEntradaSalida) : IUtilFicheros {
     override fun leerArchivo(ruta: String): List<String> {
-        val file = File(ruta)
-        return file.bufferedReader().readLines()
-    }
-
-    override fun leerSeguros(ruta: String, mapaSeguros: Map<String, (List<String>) -> Seguro>): List<Seguro> {
-        val lista = leerArchivo(ruta)
-        lista.forEach {
-            val datos = it.split(";")
+        try {
+            val file = File(ruta)
+            if (file.exists()) {
+                return file.readLines()
+            } else {
+                throw IllegalArgumentException("El archivo no existe")
+            }
+        } catch (e: IllegalArgumentException) {
+            println("**ERROR** -> No existe el archivo: ${e.message}")
+        } catch (e: IOException) {
+            println("**ERROR** -> No se pudo leer el archivo: ${e.message}")
+        } catch (e: Exception){
+            println("**ERROR** -> ${e.message}")
         }
+        return listOf<String>()
     }
 
     override fun agregarLinea(ruta: String, linea: String): Boolean {
-        val file = File(ruta)
-        file.bufferedWriter().newLine()
-        file.writeText(linea)
-        return true
+        return try {
+            val file = File(ruta)
+            file.appendText(linea + "\n")
+            true
+        } catch (e: Exception) {
+            println("**ERROR** -> ${e.message}")
+            false
+        }
     }
 
     override fun <T : IExportable> escribirArchivo(ruta: String, elementos: List<T>): Boolean {
-        elementos.forEach {
-            if (!agregarLinea(ruta, it.serializar())) return false
+        try {
+            val file = File(ruta)
+            elementos.forEach {
+                file.writeText(it.serializar(";"))
+            }
+        } catch (e: Exception) {
+            println("**ERROR** -> ${e.message}")
+            return false
         }
+
         return true
     }
 
@@ -36,7 +55,6 @@ class Ficheros : IUtilFicheros {
     }
 
     override fun existeDirectorio(ruta: String): Boolean {
-        val file = File(ruta)
-        return file.isDirectory
+        return File(ruta).isDirectory
     }
 }

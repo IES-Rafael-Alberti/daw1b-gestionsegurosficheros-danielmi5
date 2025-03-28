@@ -31,9 +31,6 @@ class SeguroAuto : Seguro {
         return importe * (((interes + interesResidual) / 100) + 1)
     }
 
-    override fun tipoSeguro(): String {
-        return this::class.simpleName ?: "Desconocido"
-    }
 
     override fun serializar(separador: String): String {
         return "${super.serializar(";")}$separador$descripcion$separador$combustible$separador$tipoAuto$separador$cobertura$separador$asistenciaCarretera$separador$numPartes"
@@ -47,7 +44,7 @@ class SeguroAuto : Seguro {
     }
 
     companion object {
-        private var numPolizasAuto: Int = 400000
+        var numPolizasAuto: Int = 400000
 
         const val PORCENTAJE_INCREMENTO_PARTES = 2
 

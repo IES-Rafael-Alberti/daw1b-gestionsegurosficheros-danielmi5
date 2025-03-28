@@ -26,10 +26,6 @@ class SeguroVida : Seguro {
         return importe * (((interes + interesResidual + nivelRiesgo.interesAplicado) / 100) + 1)
     }
 
-    override fun tipoSeguro(): String {
-        return this::class.simpleName ?: "Desconocido"
-    }
-
     override fun serializar(separador: String): String {
         return "${super.serializar(";")}$separador$fechaNac$separador$nivelRiesgo$separador$indemnizacion"
     }
@@ -41,7 +37,7 @@ class SeguroVida : Seguro {
     }
 
     companion object {
-        private var numPolizasVida: Int = 800000
+        var numPolizasVida: Int = 800000
 
         const val PORCENTAJE_INCREMENTO_POR_ANIO = 0.05
 
