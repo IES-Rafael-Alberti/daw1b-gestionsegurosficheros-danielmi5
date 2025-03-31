@@ -16,11 +16,11 @@ class Ficheros(val ui: IEntradaSalida) : IUtilFicheros {
                 throw IllegalArgumentException("El archivo no existe")
             }
         } catch (e: IllegalArgumentException) {
-            println("**ERROR** -> No existe el archivo: ${e.message}")
+            ui.mostrarError("No existe el archivo: ${e.message}")
         } catch (e: IOException) {
-            println("**ERROR** -> No se pudo leer el archivo: ${e.message}")
+            ui.mostrarError("No se pudo leer el archivo: ${e.message}")
         } catch (e: Exception){
-            println("**ERROR** -> ${e.message}")
+            ui.mostrarError(e.message.toString())
         }
         return listOf<String>()
     }
@@ -31,7 +31,7 @@ class Ficheros(val ui: IEntradaSalida) : IUtilFicheros {
             file.appendText(linea + "\n")
             true
         } catch (e: Exception) {
-            println("**ERROR** -> ${e.message}")
+            ui.mostrarError(e.message.toString())
             false
         }
     }
@@ -43,7 +43,7 @@ class Ficheros(val ui: IEntradaSalida) : IUtilFicheros {
                 file.writeText(it.serializar(";"))
             }
         } catch (e: Exception) {
-            println("**ERROR** -> ${e.message}")
+            ui.mostrarError(e.message.toString())
             return false
         }
 

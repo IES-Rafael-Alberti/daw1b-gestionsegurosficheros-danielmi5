@@ -13,6 +13,7 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation(kotlin("stdlib"))
     implementation("at.favre.lib:bcrypt:0.9.0")
+    implementation("org.jline:jline:3.29.0")
 }
 
 tasks.test {
