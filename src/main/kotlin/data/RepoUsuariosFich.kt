@@ -5,11 +5,6 @@ import utils.IUtilFicheros
 
 class RepoUsuariosFich(private val rutaArchivo: String, private val fich: IUtilFicheros) : RepoUsuariosMem(), ICargarUsuariosIniciales {
 
-    init {
-        if (fich.existeFichero(rutaArchivo)){
-            cargarUsuarios()
-        }
-    }
 
     override fun cargarUsuarios(): Boolean {
         val usuariosCargados = fich.leerArchivo(rutaArchivo)

@@ -8,17 +8,6 @@ import utils.IUtilFicheros
 
 class RepoSegurosFich(private val rutaArchivo: String, private val fich: IUtilFicheros) : RepoSegurosMem(), ICargarSegurosIniciales {
 
-    init {
-        if (fich.existeFichero(rutaArchivo)){
-            cargarSeguros(mapa)
-        }
-    }
-
-    companion object{
-        val mapa: Map<String, (List<String>) -> Seguro> = mapOf("vida" to SeguroVida::crearSeguro,
-            "auto" to SeguroAuto::crearSeguro,
-            "hogar" to SeguroHogar::crearSeguro)
-    }
 
     override fun agregar(seguro: Seguro): Boolean {
         if (buscar(seguro.numPoliza) == null) {
