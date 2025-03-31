@@ -7,7 +7,7 @@ open class RepoUsuariosMem : IRepoUsuarios {
     protected val listaUsuarios = mutableListOf<Usuario>()
 
     override fun agregar(usuario: Usuario): Boolean {
-        return if (buscar(usuario.nombre) != null) listaUsuarios.add(usuario) else false
+        return if (buscar(usuario.nombre) == null) listaUsuarios.add(usuario) else false
     }
 
     override fun buscar(nombreUsuario: String): Usuario? {
@@ -20,7 +20,7 @@ open class RepoUsuariosMem : IRepoUsuarios {
 
     override fun eliminar(nombreUsuario: String): Boolean {
         val usuario = buscar(nombreUsuario)
-        return if (usuario != null) listaUsuarios.remove(usuario) else false
+        return if (usuario != null) eliminar(usuario) else false
     }
 
     override fun obtenerTodos(): List<Usuario> {

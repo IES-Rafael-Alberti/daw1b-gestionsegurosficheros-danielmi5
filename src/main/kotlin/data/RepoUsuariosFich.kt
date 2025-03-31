@@ -28,12 +28,30 @@ class RepoUsuariosFich(private val rutaArchivo: String, private val fich: IUtilF
         return false
     }
 
+    override fun eliminar(nombreUsuario: String): Boolean {
+        if (fich.escribirArchivo(rutaArchivo, listaUsuarios.filter { it.nombre != nombreUsuario })) {
+            if (buscar(nombreUsuario) != null) return super.eliminar(buscar(nombreUsuario)!!)
+        }
+        return false
+    }
+
     override fun agregar(usuario: Usuario): Boolean {
-        if (buscar(usuario.nombre) != null) {
+        if (buscar(usuario.nombre) == null) {
             if (fich.agregarLinea(rutaArchivo, usuario.serializar(";"))){
                 return super.agregar(usuario)
             }
         }
         return false
     }
+
+    override fun cambiarClave(usuario: Usuario, nuevaClave: String): Boolean {
+        usuario.cambiarClave(nuevaClave)
+        return fich.escribirArchivo(rutaArchivo, listaUsuarios)
+    }
+
+
+
+
+
+
 }

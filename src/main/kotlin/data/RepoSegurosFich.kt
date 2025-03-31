@@ -21,7 +21,7 @@ class RepoSegurosFich(private val rutaArchivo: String, private val fich: IUtilFi
     }
 
     override fun agregar(seguro: Seguro): Boolean {
-        if (buscar(seguro.numPoliza) != null) {
+        if (buscar(seguro.numPoliza) == null) {
             if (fich.agregarLinea(rutaArchivo, seguro.serializar(";"))){
                 return super.agregar(seguro)
             }
@@ -36,16 +36,24 @@ class RepoSegurosFich(private val rutaArchivo: String, private val fich: IUtilFi
         return false
     }
 
+    override fun eliminar(numPoliza: Int): Boolean {
+        if (fich.escribirArchivo(rutaArchivo, listaSeguros.filter { it.numPoliza != numPoliza })) {
+            if (buscar(numPoliza) != null) return super.eliminar(buscar(numPoliza)!!)
+        }
+        return false
+    }
+
     override fun cargarSeguros(mapa: Map<String, (List<String>) -> Seguro>): Boolean {
         val segurosCargados = fich.leerArchivo(rutaArchivo)
         segurosCargados.forEach {
             val split = it.split(";")
-            val seguro = mapa[split.last()]?.invoke(split) ?: return false
-            listaSeguros.add(seguro)
+            val funcionCrearSeguro = mapa[split.last()]
+            if (funcionCrearSeguro != null) {
+                listaSeguros.add(funcionCrearSeguro(split))
+            }
         }
         actualizarContadores(listaSeguros)
-        return true
-        
+        return listaSeguros.isNotEmpty()
     }
 
 

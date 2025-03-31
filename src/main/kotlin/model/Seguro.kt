@@ -18,12 +18,12 @@ abstract class Seguro(val numPoliza: Int, private val dniTitular: String, protec
     }
 
     override fun hashCode(): Int {
-        return numPoliza
+        return numPoliza.hashCode()
     }
 
     override fun equals(other: Any?): Boolean {
         if (other is Seguro) {
-            return if (this.numPoliza == other.numPoliza) true else false
+            return this.numPoliza == other.numPoliza
         } else return false
     }
 }

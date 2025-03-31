@@ -1,5 +1,8 @@
 package model
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 class SeguroAuto : Seguro {
     private val descripcion: String
     private val combustible: Double
