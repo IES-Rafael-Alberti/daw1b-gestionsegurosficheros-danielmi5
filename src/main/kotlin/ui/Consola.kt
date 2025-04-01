@@ -1,9 +1,9 @@
 package ui
 
-import org.jetbrains.kotlin.org.jline.reader.LineReaderBuilder
-import org.jetbrains.kotlin.org.jline.reader.UserInterruptException
-import org.jetbrains.kotlin.org.jline.reader.EndOfFileException
-import org.jetbrains.kotlin.org.jline.terminal.TerminalBuilder
+import org.jline.reader.EndOfFileException
+import org.jline.reader.LineReaderBuilder
+import org.jline.reader.UserInterruptException
+import org.jline.terminal.TerminalBuilder
 
 class Consola : IEntradaSalida {
     override fun mostrar(msj: String, salto: Boolean, pausa: Boolean) {
@@ -30,13 +30,18 @@ class Consola : IEntradaSalida {
     override fun pedirDouble(prompt: String, error: String, errorConv: String, debeCumplir: (Double) -> Boolean): Double {
         val input = pedirInfo(prompt).replace(',', '.')
         val numero = input.toDoubleOrNull()
-        if (numero !is Double) require(numero == null){errorConv} else require(debeCumplir(numero)){error}
+        require(numero != null){errorConv}
+        require(debeCumplir(numero)){error}
+        return numero
+
     }
 
     override fun pedirEntero(prompt: String, error: String, errorConv: String, debeCumplir: (Int) -> Boolean): Int {
         val input = pedirInfo(prompt)
         val numero = input.toIntOrNull()
-        if (numero !is Int) require(numero == null){errorConv} else require(debeCumplir(numero)){error}
+        require(numero is Int){errorConv}
+        require(debeCumplir(numero)){error}
+        return numero
     }
 
     override fun pedirInfoOculta(prompt: String): String {
@@ -78,7 +83,7 @@ class Consola : IEntradaSalida {
     override fun preguntar(mensaje: String): Boolean {
         var resp: Boolean?
         do {
-            resp = when (pedirInfo("$mensaje (s/n)").trim().lowercase()) {
+            resp = when (pedirInfo("$mensaje (s/n)").lowercase()) {
                 "s" -> true
                 "n" -> false
                 else -> {
@@ -89,5 +94,24 @@ class Consola : IEntradaSalida {
         } while (resp == null)
 
         return resp
+    }
+
+    fun preguntar2(msj: String): Boolean{
+        var resp: String
+        do {
+            resp = try {
+                pedirInfo(msj, "Respuesta incorrecta", { cadena -> cadena in listOf("s", "n") })
+
+                //pedirInfo(msj, "Respuesta incorrecta", ::validarP)
+            } catch (e: IllegalArgumentException){
+                mostrarError(e.message.toString())
+                ""
+            }
+        } while (resp.isEmpty())
+        return resp == "s"
+    }
+
+    fun validarP(it: String): Boolean{
+        return it in listOf("s","n")
     }
 }

@@ -43,7 +43,7 @@ class SeguroVida : Seguro {
         const val PORCENTAJE_INCREMENTO_POR_ANIO = 0.05
 
         fun crearSeguro(datos: List<String>): SeguroVida {
-            return SeguroVida(datos[0].toInt(), datos[1], datos[2].toDouble(), LocalDate.parse(datos[3], DateTimeFormatter.ofPattern("dd-MM-YYYY")), Riesgo.getRiesgo(datos[4]), datos[5].toDouble()) //TODO controlar las excepciones en consola
+            return SeguroVida(datos[0].toInt(), datos[1], datos[2].toDouble(), LocalDate.parse(datos[3], DateTimeFormatter.ofPattern("dd/MM/YYYY")), Riesgo.getRiesgo(datos[4]), datos[5].toDouble()) //TODO controlar las excepciones en consola
         }
     }
 }

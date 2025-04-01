@@ -6,7 +6,7 @@ import ui.IEntradaSalida
 import java.io.IOException
 
 
-class Ficheros(val ui: IEntradaSalida) : IUtilFicheros {
+class Ficheros(private val ui: IEntradaSalida) : IUtilFicheros {
     override fun leerArchivo(ruta: String): List<String> {
         try {
             val file = File(ruta)
