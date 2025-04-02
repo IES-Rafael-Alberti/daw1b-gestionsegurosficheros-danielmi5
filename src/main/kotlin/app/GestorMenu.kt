@@ -1,9 +1,11 @@
 package app
 
-import model.Perfil
+import model.*
 import service.IServSeguros
 import service.IServUsuarios
 import ui.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 /**
@@ -112,7 +114,7 @@ class GestorMenu(
         var claveCambiada = false
         do {
             try {
-                clave = ui.pedirInfo("Introduce una clave", "La contraseña debe tener mínimo 4 caracteres alfanuméricos", {clave -> patronClave.matches(clave)})
+                clave = ui.pedirInfo("Introduce una clave", "La contraseña debe tener mínimo 4 caracteres alfanuméricos", {patronClave.matches(it)})
                 gestorUsuarios.cambiarClave(usuario, clave)
                 claveCambiada = true
             } catch (e: Exception) {
@@ -169,7 +171,7 @@ class GestorMenu(
         var importe = 0.0
         do {
             try {
-                importe = ui.pedirDouble("Introduce un importe positivo", "El importe no puede ser negativo", "Debes introducir un número decimal positivo", {importe -> importe >= 0.0})
+                importe = ui.pedirDouble("Introduce un importe positivo", "El importe no puede ser negativo", "Debes introducir un número decimal positivo", {it >= 0.0})
             } catch (e: Exception){
                 ui.mostrarError(e.message.toString())
             }
@@ -177,9 +179,71 @@ class GestorMenu(
         return importe
     }
 
+    private fun pedirTipoAuto(): Auto{
+        var tipoAuto: Auto? = null
 
+        do {
+            try {
+                tipoAuto = Auto.getAuto(ui.pedirInfo("Introduce el tipo de Auto", "Debe ser un tipo de auto válido -> ${Auto.entries}", { cadena: String -> cadena.uppercase() in Auto.entries.map {it.name}}))
+            } catch (e: Exception){
+                ui.mostrarError(e.message.toString())
+            }
+        } while (tipoAuto == null)
+        return tipoAuto
 
+    }
 
+    private fun pedirCobertura(): Cobertura{
+        var cobertura: Cobertura? = null
+
+        do {
+            try {
+                cobertura = Cobertura.getCobertura(ui.pedirInfo("Introduce la cobertura", "Debe ser una cobertura existente -> ${Cobertura.entries}", { cadena: String -> cadena.uppercase() in Cobertura.entries.map {it.name}}))
+            } catch (e: Exception){
+                ui.mostrarError(e.message.toString())
+            }
+        } while (cobertura == null)
+        return cobertura
+
+    }
+
+    private fun pedirNivelRiesgo(): Riesgo{
+        var riesgo: Riesgo? = null
+
+        do {
+            try {
+                riesgo = Riesgo.getRiesgo(ui.pedirInfo("Introduce la cobertura", "Debe ser una cobertura existente -> ${Riesgo.entries}", { cadena: String -> cadena.uppercase() in Riesgo.entries.map {it.name}}))
+            } catch (e: Exception){
+                ui.mostrarError(e.message.toString())
+            }
+        } while (riesgo == null)
+        return riesgo
+
+    }
+
+    private fun pedirFechaDeNacimiento(): LocalDate {
+        var fecha = ""
+        var fechaValida = false
+        while (!fechaValida){
+            try {
+                fecha = ui.pedirInfo("Introduce la fecha de nacimiento", "Debes introducir una fecha de nacimiento válida", ::verificarFecha)
+
+                fechaValida = true
+            } catch (e: Exception){
+                ui.mostrarError(e.message.toString())
+            }
+        }
+        return LocalDate.parse(fecha, DateTimeFormatter.ofPattern(formatoFecha))
+    }
+
+    private fun verificarFecha(fecha: String):Boolean{
+        val rangoAniosPermitidos = 125
+        return if (patronFormatoFecha.matches(fecha)) {
+            val fechaFormateada = LocalDate.parse(fecha, DateTimeFormatter.ofPattern(formatoFecha))
+            if (fechaFormateada < LocalDate.now() && fechaFormateada.year > fechaFormateada.year - rangoAniosPermitidos) true else false
+        } else false
+
+    }
 
     /** Crea un nuevo seguro de hogar solicitando los datos al usuario */
     fun contratarSeguroHogar() {
@@ -188,41 +252,43 @@ class GestorMenu(
 
     /** Crea un nuevo seguro de auto solicitando los datos al usuario */
     fun contratarSeguroAuto() {
-        TODO("Implementar este método")
+        gestorSeguros.contratarSeguroAuto(pedirDni(), pedirImporte(), ui.pedirCadena("Introduce la descripción del Auto"),ui.pedirValorDouble("Introduce el combustible del Auto"), pedirTipoAuto(), pedirCobertura(), ui.preguntar("¿Tiene asistencia en carretera?"),ui.pedirValorInt("Introduce el número de partes del auto"))
     }
 
     /** Crea un nuevo seguro de vida solicitando los datos al usuario */
     fun contratarSeguroVida() {
-        TODO("Implementar este método")
+        gestorSeguros.contratarSeguroVida(pedirDni(), pedirImporte(), pedirFechaDeNacimiento(), pedirNivelRiesgo(), ui.pedirValorDouble("Introduce la indemnzación del seguro"))
     }
 
     /** Elimina un seguro si existe por su número de póliza */
     fun eliminarSeguro() {
-        TODO("Implementar este método")
+        if (gestorSeguros.eliminarSeguro(ui.pedirEntero("Introduce el número de poliza a eliminar", "No hay ningún usuario con ese número de poliza", "Debes introducir un número de póliza existente", {it > 0}))) ui.mostrar("Usuario eliminado correctamente") else ui.mostrarError("No se ha podido eliminar un usuario")
     }
 
     /** Muestra todos los seguros existentes */
     fun consultarSeguros() {
-        TODO("Implementar este método")
+        gestorSeguros.consultarTodos()
     }
 
     /** Muestra todos los seguros de tipo hogar */
     fun consultarSegurosHogar() {
-        TODO("Implementar este método")
+        gestorSeguros.consultarPorTipo("SeguroHogar")
     }
 
     /** Muestra todos los seguros de tipo auto */
     fun consultarSegurosAuto() {
-        TODO("Implementar este método")
+        gestorSeguros.consultarPorTipo("SeguroAuto")
     }
 
     /** Muestra todos los seguros de tipo vida */
     fun consultarSegurosVida() {
-        TODO("Implementar este método")
+        gestorSeguros.consultarPorTipo("SegurVida")
     }
 
     companion object {
         val patronClave = "^[A-Za-z0-9]{4,}$".toRegex()
         val patronDNI = "^\\d{8}[A-Z]$".toRegex()
+        val patronFormatoFecha = "^\\d{2}/\\d{2}/\\d{2}$".toRegex()
+        val formatoFecha = "dd/MM/yyyy"
     }
 }

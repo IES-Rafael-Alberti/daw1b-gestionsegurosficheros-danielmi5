@@ -47,7 +47,6 @@ class SeguroHogar : Seguro {
 
         fun crearSeguro(datos: List<String>): SeguroHogar {
             return SeguroHogar(datos[0].toInt(), datos[1], datos[2].toDouble(), datos[3].toDouble(), datos[4].toDouble(), datos[5], datos[6].toInt(),)
-            //TODO controlar las excepciones en consola
         }
     }
 }

@@ -128,6 +128,19 @@ class Consola : IEntradaSalida {
         return valor
     }
 
+    override fun pedirValorInt(msj: String): Int{
+        var valor = 0
+        do {
+            try {
+                valor = pedirEntero(msj, "El valor no puede ser negativo", "Debes introducir un número entere¡o positivo", {it >= 0})
+            } catch (e: Exception){
+                mostrarError(e.message.toString())
+            }
+        } while (valor < 0)
+        return valor
+    }
+
+
     override fun pedirCadena(msj: String): String{
         var valor = ""
         do {

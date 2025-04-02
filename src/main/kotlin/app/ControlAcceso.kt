@@ -133,7 +133,7 @@ class ControlAcceso(
         var perfil: Perfil? = null
         do {
             try {
-                perfil = gestorUsuarios.iniciarSesion(nombreUsuario, ui.pedirInfo("Introduce la clave del usuario"))
+                perfil = gestorUsuarios.iniciarSesion(nombreUsuario, ui.pedirInfoOculta("Introduce la clave del usuario"))
                 if (perfil == null) {
                     throw IllegalArgumentException("Clave incorrecta")
                 }

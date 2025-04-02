@@ -13,5 +13,6 @@ interface IEntradaSalida {
     fun preguntar(mensaje: String): Boolean
     fun pedirCadena(msj: String): String
     fun pedirValorDouble(msj: String): Double
+    fun pedirValorInt(msj: String): Int
     fun pedirAnio(msj: String): Int
 }

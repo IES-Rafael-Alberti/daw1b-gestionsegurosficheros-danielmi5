@@ -24,7 +24,7 @@ open class RepoUsuariosMem : IRepoUsuarios {
     }
 
     override fun obtenerTodos(): List<Usuario> {
-        return listaUsuarios.toList()
+        return listaUsuarios
     }
 
     override fun obtener(perfil: Perfil): List<Usuario> {

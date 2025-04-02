@@ -23,7 +23,7 @@ open class RepoSegurosMem : IRepoSeguros {
     }
 
     override fun obtenerTodos(): List<Seguro> {
-        return listaSeguros.toList()
+        return listaSeguros
     }
 
     override fun obtener(tipoSeguro: String): List<Seguro> {
