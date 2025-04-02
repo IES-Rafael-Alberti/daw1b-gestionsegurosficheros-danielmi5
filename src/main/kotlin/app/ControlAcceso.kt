@@ -1,6 +1,7 @@
 package app
 
 import model.Perfil
+import model.Usuario
 import service.IServUsuarios
 import ui.IEntradaSalida
 import utils.IUtilFicheros
@@ -47,18 +48,8 @@ class ControlAcceso(
         if (verificarFicheroUsuarios()) {
             par = iniciarSesion()
         } else {
-            var todoCorrecto = false
-            while (!todoCorrecto){
-                if (gestorUsuarios.agregarUsuario(ui.pedirInfo("Introduce el nombre del usuario"), ui.pedirInfo("Introduce la clave"), Perfil.ADMIN)) todoCorrecto = true
-                else {
-                    ui.mostrarError("El usuario no se ha podido crear")
-                    if (ui.preguntar("¿Quieres cancelar el proceso?")) return null;
-                }
-            }
-
-            gestorUsuarios.
+            par = crearAdminInicial()
         }
-
 
         return par
     }
@@ -93,16 +84,67 @@ class ControlAcceso(
         var sesion: Pair<String, Perfil>? = null
         var todoCorrecto = false
         while (!todoCorrecto){
-            var nombreUsuario = ui.pedirInfo("Introduce el nombre del usuario")
-            val perfil = gestorUsuarios.iniciarSesion(nombreUsuario, ui.pedirInfo("Introduce la clave"))
-            if (perfil == null) {
-                ui.mostrarError("No se ha podido iniciar sesión -> Introduce las credenciales correctas")
+            try {
+                var nombreUsuario = ui.pedirInfo("Introduce el nombre del usuario", "Nombre introducido no existente", { nombre -> gestorUsuarios.buscarUsuario(nombre) != null })
+                val perfil = verificarSesion(nombreUsuario)
+                if (perfil == null){
+                    return null
+                } else {
+                    sesion = Pair(nombreUsuario, perfil)
+                    todoCorrecto = true
+                }
+            } catch (e: Exception) {
+                ui.mostrarError(e.message.toString())
                 if (ui.preguntar("¿Quieres cancelar el proceso?")) return null
-            } else {
-                sesion = Pair(nombreUsuario, perfil)
-                todoCorrecto = true
             }
         }
         return sesion
     }
+
+
+    private fun crearAdminInicial() : Pair<String, Perfil>?{
+        val patronClave = "^[A-Za-z0-9]{4,}$".toRegex()
+        var admin: Pair<String, Perfil>? = null
+        var todoCorrecto = false
+        while (!todoCorrecto){
+            try {
+                var nombreUsuario = ui.pedirInfo("Introduce un nombre para el usuario", "El nombre no puede estar vacío", {nombre: String -> nombre.isNotBlank()})
+
+                val clave = ui.pedirInfo("Introduce una clave", "La contraseña debe tener mínimo 4 caracteres alfanuméricos", {clave -> patronClave.matches(clave)})
+
+                if (gestorUsuarios.agregarUsuario(nombreUsuario, clave, Perfil.ADMIN)) {
+                    todoCorrecto = true
+                    admin = Pair(nombreUsuario, Perfil.ADMIN)
+                }
+                else {
+                    throw IllegalArgumentException("El usuario no se ha podido crear")
+                }
+            } catch (e: Exception) {
+                ui.mostrarError(e.message.toString())
+                if (ui.preguntar("¿Quieres cancelar el proceso?")) return null;
+            }
+
+        }
+
+        return admin
+    }
+
+    private fun verificarSesion(nombreUsuario: String) :Perfil? {
+        var perfil: Perfil? = null
+        do {
+            try {
+                perfil = gestorUsuarios.iniciarSesion(nombreUsuario, ui.pedirInfo("Introduce la clave del usuario"))
+                if (perfil == null) {
+                    throw IllegalArgumentException("Clave incorrecta")
+                }
+            } catch (e: Exception) {
+                ui.mostrarError(e.message.toString())
+                if (ui.preguntar("¿Quieres cancelar el proceso?")) return null;
+            }
+
+        }while (perfil == null)
+
+        return perfil
+    }
 }
+

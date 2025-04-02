@@ -4,6 +4,7 @@ import org.jline.reader.EndOfFileException
 import org.jline.reader.LineReaderBuilder
 import org.jline.reader.UserInterruptException
 import org.jline.terminal.TerminalBuilder
+import java.time.LocalDate
 
 class Consola : IEntradaSalida {
     override fun mostrar(msj: String, salto: Boolean, pausa: Boolean) {
@@ -113,5 +114,42 @@ class Consola : IEntradaSalida {
 
     fun validarP(it: String): Boolean{
         return it in listOf("s","n")
+    }
+
+    override fun pedirValorDouble(msj: String): Double{
+        var valor = 0.0
+        do {
+            try {
+                valor = pedirDouble(msj, "El valor no puede ser negativo", "Debes introducir un número decimal positivo", {it >= 0.0})
+            } catch (e: Exception){
+                mostrarError(e.message.toString())
+            }
+        } while (valor < 0)
+        return valor
+    }
+
+    override fun pedirCadena(msj: String): String{
+        var valor = ""
+        do {
+            try {
+                valor = pedirInfo(msj, "La cadena no puede estar vacía", {cadena: String -> cadena.isNotBlank()})
+            } catch (e: Exception){
+                mostrarError(e.message.toString())
+            }
+        } while (valor.isEmpty())
+        return valor
+    }
+
+    override fun pedirAnio(msj: String): Int {
+        val anioActual = LocalDate.now().year
+        var anioI = 0
+        do {
+            try {
+                anioI = pedirEntero(msj, "El año no puede ser menor a 0 o mayor a $anioActual", "Año no introducido con un número entero", { anio: Int -> anio in 0..anioActual})
+            } catch (e: Exception){
+                mostrarError(e.message.toString())
+            }
+        } while (anioI in 0..anioActual)
+        return anioI
     }
 }

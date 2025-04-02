@@ -11,4 +11,7 @@ interface IEntradaSalida {
     fun pausar(msj: String = "Pulse Enter para Continuar...")
     fun limpiarPantalla(numSaltos: Int = 20)
     fun preguntar(mensaje: String): Boolean
+    fun pedirCadena(msj: String): String
+    fun pedirValorDouble(msj: String): Double
+    fun pedirAnio(msj: String): Int
 }
