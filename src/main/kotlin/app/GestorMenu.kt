@@ -64,7 +64,7 @@ class GestorMenu(
     private fun ejecutarMenu(opciones: List<String>, ejecutar: Map<Int, (GestorMenu) -> Boolean>) {
         do {
             mostrarMenu(opciones)
-            val opcion = ui.pedirInfo("Elige opción > ").toIntOrNull()
+            val opcion = ui.pedirInfo("Elige opción").toIntOrNull()
             if (opcion != null && opcion in 1..opciones.size) {
                 // Buscar en el mapa las acciones a ejecutar en la opción de menú seleccionada
                 val accion = ejecutar[opcion]
@@ -83,7 +83,7 @@ class GestorMenu(
             try {
                 var nombreUsuario = ui.pedirInfo("Introduce un nombre para el usuario", "El nombre no puede estar vacío", {nombre: String -> nombre.isNotBlank()})
 
-                val clave = ui.pedirInfo("Introduce una clave", "La contraseña debe tener mínimo 4 caracteres alfanuméricos", {clave -> patronClave.matches(clave)})
+                val clave = ui.pedirInfo("Introduce una contraseña", "La contraseña debe tener mínimo 4 caracteres alfanuméricos", {clave -> patronClave.matches(clave)})
 
                 val perfil = pedirPerfil()
 
@@ -117,15 +117,15 @@ class GestorMenu(
         var claveCambiada = false
         do {
             try {
-                clave = ui.pedirInfo("Introduce la nueva clave", "La contraseña debe tener mínimo 4 caracteres alfanuméricos", {patronClave.matches(it)})
+                clave = ui.pedirInfo("Introduce la nueva contraseña", "La contraseña debe tener mínimo 4 caracteres alfanuméricos", {patronClave.matches(it)})
                 gestorUsuarios.cambiarClave(usuario, clave)
                 claveCambiada = true
             } catch (e: Exception) {
                 ui.mostrarError(e.message.toString())
-                //if (ui.preguntar("¿Quieres cancelar el proceso?")) return null;
+                if (ui.preguntar("¿Quieres cancelar el proceso?")) return;
             }
         } while (!claveCambiada)
-        ui.mostrar("Se ha cambiado la clave correctamente.",pausa = true)
+        ui.mostrar("Se ha cambiado la contraseña correctamente.",pausa = true)
     }
 
     /**
@@ -294,6 +294,10 @@ class GestorMenu(
 
     /** Elimina un seguro si existe por su número de póliza */
     fun eliminarSeguro() {
+        if (gestorSeguros.consultarTodos().isEmpty()){
+            ui.mostrar("No hay seguros contratados todavía.", pausa = true)
+            return
+        }
         var numPoliza = 0
         var realizado = false
         do {

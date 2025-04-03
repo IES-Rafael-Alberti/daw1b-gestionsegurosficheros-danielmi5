@@ -55,8 +55,8 @@ fun main() {
     val gestorSeguros = GestorSeguros(repoSeguros)
     // Se inicia el proceso de autenticación. Se comprueba si hay usuarios en el sistema y se pide login.
     // Si no hay usuarios, se permite crear un usuario ADMIN inicial.
-    val gestorMenu = ControlAcceso(rutaUsuarios, ui, gestorUsuarios, gestorFicheros)
-    val autenticacion = gestorMenu.autenticar()
+    val control = ControlAcceso(rutaUsuarios, ui, gestorUsuarios, gestorFicheros)
+    val autenticacion = control.autenticar()
 
 
 

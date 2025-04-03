@@ -45,13 +45,16 @@ class ControlAcceso(
      */
     fun autenticar(): Pair<String, Perfil>? {
         val par: Pair<String, Perfil>?
-        if (verificarFicheroUsuarios()) {
-            par = iniciarSesion()
-            if (par != null) ui.mostrar("Se ha iniciado sesión correctamente", pausa = true)
-        } else {
+
+        if (gestorUsuarios.consultarTodos().isEmpty() || !verificarFicheroUsuarios()) {
+            ui.mostrar("No hay datos existentes.")
             par = if(ui.preguntar("¿Quieres crear un usuario ADMIN inicial?")) crearAdminInicial() else null
             if (par != null) ui.mostrar("Se ha creado correctamente el Usuario ADMIN inicial", pausa = true)
-        }
+        } else if (verificarFicheroUsuarios()) {
+            ui.mostrar("Se han encontrado datos existentes.")
+            par = iniciarSesion()
+            if (par != null) ui.mostrar("Se ha iniciado sesión correctamente", pausa = true)
+        } else par = null
 
         return par
     }
@@ -68,10 +71,15 @@ class ControlAcceso(
      *         `false` si el usuario cancela la creación inicial o ocurre un error.
      */
     private fun verificarFicheroUsuarios(): Boolean {
-        return if (!ficheros.existeFichero(rutaArchivo) || ficheros.leerArchivo(rutaArchivo).isEmpty()) {
-            ui.mostrar("EL fichero no existe o está vacío.")
+        return if (!ficheros.existeFichero(rutaArchivo)) {
+            ui.mostrar("EL fichero no existe")
             false
-        } else true
+        }
+        else if (ficheros.leerArchivo(rutaArchivo).isEmpty()){
+            ui.mostrar("El fichero está vacío.")
+            false
+        }
+        else true
     }
 
 
@@ -114,7 +122,7 @@ class ControlAcceso(
             try {
                 var nombreUsuario = ui.pedirInfo("Introduce un nombre para el usuario", "El nombre no puede estar vacío", {nombre: String -> nombre.isNotBlank()})
 
-                val clave = ui.pedirInfo("Introduce una clave", "La contraseña debe tener mínimo 4 caracteres alfanuméricos", {clave -> patronClave.matches(clave)})
+                val clave = ui.pedirInfo("Introduce una contraseña", "La contraseña debe tener mínimo 4 caracteres alfanuméricos", {clave -> patronClave.matches(clave)})
 
                 if (gestorUsuarios.agregarUsuario(nombreUsuario, clave, Perfil.ADMIN)) {
                     todoCorrecto = true
@@ -137,9 +145,9 @@ class ControlAcceso(
         var perfil: Perfil? = null
         do {
             try {
-                perfil = gestorUsuarios.iniciarSesion(nombreUsuario, ui.pedirInfoOculta("Introduce la clave del usuario >>"))
+                perfil = gestorUsuarios.iniciarSesion(nombreUsuario, ui.pedirInfoOculta("Introduce la contraseña del usuario >>"))
                 if (perfil == null) {
-                    throw IllegalArgumentException("Clave incorrecta")
+                    throw IllegalArgumentException("Contraseña incorrecta")
                 }
             } catch (e: Exception) {
                 ui.mostrarError(e.message.toString())
