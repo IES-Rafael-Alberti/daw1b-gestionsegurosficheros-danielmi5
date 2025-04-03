@@ -2,6 +2,7 @@ package ui
 
 interface IEntradaSalida {
     fun mostrar(msj: String, salto: Boolean = true, pausa: Boolean = false)
+    fun <T> mostrarListado(msj: String, lista: List<T>)
     fun mostrarError(msj: String, pausa: Boolean = true)
     fun pedirInfo(msj: String = ""): String
     fun pedirInfo(msj: String, error: String, debeCumplir: (String) -> Boolean): String

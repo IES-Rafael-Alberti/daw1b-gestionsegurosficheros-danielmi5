@@ -12,6 +12,12 @@ class Consola : IEntradaSalida {
         if (pausa) pausar("Introduce ENTER para continuar...")
     }
 
+    override fun <T> mostrarListado(msj: String, lista: List<T>) {
+        mostrar(msj+"\n"+"-".repeat(msj.length), true, false)
+        lista.forEach {mostrar(it.toString(), true, false)}
+        pausar("Introduce ENTER para continuar...")
+    }
+
     override fun mostrarError(msj: String, pausa: Boolean) {
         val mensajeError = if (msj.startsWith("ERROR - ")) msj else "ERROR - $msj"
         mostrar(mensajeError, true, pausa)
@@ -162,7 +168,7 @@ class Consola : IEntradaSalida {
             } catch (e: Exception){
                 mostrarError(e.message.toString())
             }
-        } while (anioI in 0..anioActual)
+        } while (anioI !in 0..anioActual)
         return anioI
     }
 }

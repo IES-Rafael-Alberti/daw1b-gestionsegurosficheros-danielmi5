@@ -32,7 +32,7 @@ class GestorMenu(
      * @param indice Índice del menú que se desea mostrar (0 = principal).
      */
     fun iniciarMenu(indice: Int = 0) {
-        val (opciones, acciones) = ConfiguracionesApp.obtenerMenuYAcciones(perfilUsuario.toString(), indice)
+        val (opciones, acciones) = ConfiguracionesApp.obtenerMenuYAcciones(perfilUsuario.name.lowercase(), indice)
         ejecutarMenu(opciones, acciones)
     }
 
@@ -85,7 +85,7 @@ class GestorMenu(
 
                 val clave = ui.pedirInfo("Introduce una clave", "La contraseña debe tener mínimo 4 caracteres alfanuméricos", {clave -> patronClave.matches(clave)})
 
-                val perfil = Perfil.getPerfil(ui.pedirInfo("Introduce el perfil del usuario", "Debe ser un perfil válido -> ${Perfil.entries}", { cadena: String -> cadena.uppercase() in Perfil.entries.map {it.name}}))
+                val perfil = pedirPerfil()
 
                 if (gestorUsuarios.agregarUsuario(nombreUsuario, clave, perfil)) {
                     todoCorrecto = true
@@ -97,14 +97,13 @@ class GestorMenu(
                 ui.mostrarError(e.message.toString())
                 //if (ui.preguntar("¿Quieres cancelar el proceso?")) return null;
             }
-
         }
-
+        ui.mostrar("Se ha creado el usuario correctamente.",pausa = true)
     }
 
     /** Elimina un usuario si existe */
     fun eliminarUsuario() {
-        if (gestorUsuarios.eliminarUsuario(ui.pedirInfo("Introduce el nombre del usuario a eliminar"))) ui.mostrar("Usuario eliminado correctamente") else ui.mostrarError("No se ha podido eliminar el usuario")
+        if (gestorUsuarios.eliminarUsuario(ui.pedirInfo("Introduce el nombre del usuario a eliminar"))) ui.mostrar("Usuario eliminado correctamente", pausa = true) else ui.mostrarError("No se ha podido eliminar el usuario")
     }
 
     /** Cambia la contraseña del usuario actual */
@@ -114,7 +113,7 @@ class GestorMenu(
         var claveCambiada = false
         do {
             try {
-                clave = ui.pedirInfo("Introduce una clave", "La contraseña debe tener mínimo 4 caracteres alfanuméricos", {patronClave.matches(it)})
+                clave = ui.pedirInfo("Introduce la nueva clave", "La contraseña debe tener mínimo 4 caracteres alfanuméricos", {patronClave.matches(it)})
                 gestorUsuarios.cambiarClave(usuario, clave)
                 claveCambiada = true
             } catch (e: Exception) {
@@ -122,25 +121,30 @@ class GestorMenu(
                 //if (ui.preguntar("¿Quieres cancelar el proceso?")) return null;
             }
         } while (!claveCambiada)
-
+        ui.mostrar("Se ha cambiado la clave correctamente.",pausa = true)
     }
 
     /**
      * Mostrar la lista de usuarios (Todos o filtrados por un perfil)
      */
     fun consultarUsuarios() {
-        if (ui.preguntar("¿Quieres una consulta global en lugar de una filtrada por perfil?")) gestorUsuarios.consultarTodos() else {
+        val (lista, nombreLista) = if (ui.preguntar("¿Quieres una consulta global en lugar de una filtrada por perfil?")){
+            Pair(gestorUsuarios.consultarTodos(), "Usuarios")
+        } else {
+            var perfil = ""
             while (true){
                 try {
-                    val perfil = ui.pedirInfo("Introduce el perfil a filtrar", "Debe ser un perfil válido -> ${Perfil.entries}", { cadena: String -> cadena.uppercase() in Perfil.entries.map {it.name}})
+                    perfil = ui.pedirInfo("Introduce el perfil a filtrar ${Perfil.entries}", "Debe ser un perfil válido -> ${Perfil.entries}", { cadena: String -> cadena.uppercase() in Perfil.entries.map {it.name}})
 
-                    gestorUsuarios.consultarPorPerfil(Perfil.getPerfil(perfil))
+                    break;
                 } catch (e: Exception) {
                     ui.mostrarError(e.message.toString())
                     if (ui.preguntar("¿Quieres cancelar la consulta?")) break;
                 }
             }
+            Pair(gestorUsuarios.consultarPorPerfil(Perfil.getPerfil(perfil)), "Usuarios (${perfil.uppercase()})")
         }
+        if (lista.isEmpty()) ui.mostrar("No hay $nombreLista existentes", pausa = true) else ui.mostrarListado("Lista de $nombreLista", lista)
     }
 
     /**
@@ -179,12 +183,26 @@ class GestorMenu(
         return importe
     }
 
+    private fun pedirPerfil(): Perfil{
+        var perfil: Perfil? = null
+
+        do {
+            try {
+                perfil = Perfil.getPerfil(ui.pedirInfo("Introduce el perfil del usuario ${Perfil.entries}", "Debe ser un perfil válido -> ${Perfil.entries}", { cadena: String -> cadena.uppercase() in Perfil.entries.map {it.name}}))
+            } catch (e: Exception){
+                ui.mostrarError(e.message.toString())
+            }
+        } while (perfil == null)
+        return perfil
+
+    }
+
     private fun pedirTipoAuto(): Auto{
         var tipoAuto: Auto? = null
 
         do {
             try {
-                tipoAuto = Auto.getAuto(ui.pedirInfo("Introduce el tipo de Auto", "Debe ser un tipo de auto válido -> ${Auto.entries}", { cadena: String -> cadena.uppercase() in Auto.entries.map {it.name}}))
+                tipoAuto = Auto.getAuto(ui.pedirInfo("Introduce el tipo de Auto ${Auto.entries}", "Debe ser un tipo de auto válido -> ${Auto.entries}", { cadena: String -> cadena.uppercase() in Auto.entries.map {it.name}}))
             } catch (e: Exception){
                 ui.mostrarError(e.message.toString())
             }
@@ -198,7 +216,7 @@ class GestorMenu(
 
         do {
             try {
-                cobertura = Cobertura.getCobertura(ui.pedirInfo("Introduce la cobertura", "Debe ser una cobertura existente -> ${Cobertura.entries}", { cadena: String -> cadena.uppercase() in Cobertura.entries.map {it.name}}))
+                cobertura = Cobertura.getCobertura(ui.pedirInfo("Introduce la cobertura ${Cobertura.entries}", "Debe ser una cobertura existente -> ${Cobertura.entries}", { cadena: String -> cadena.uppercase() in Cobertura.entries.map {it.name}}))
             } catch (e: Exception){
                 ui.mostrarError(e.message.toString())
             }
@@ -212,7 +230,7 @@ class GestorMenu(
 
         do {
             try {
-                riesgo = Riesgo.getRiesgo(ui.pedirInfo("Introduce la cobertura", "Debe ser una cobertura existente -> ${Riesgo.entries}", { cadena: String -> cadena.uppercase() in Riesgo.entries.map {it.name}}))
+                riesgo = Riesgo.getRiesgo(ui.pedirInfo("Introduce el nivel de riesgo ${Riesgo.entries}", "Debe ser un nivel de riesgo existente -> ${Riesgo.entries}", { cadena: String -> cadena.uppercase() in Riesgo.entries.map {it.name}}))
             } catch (e: Exception){
                 ui.mostrarError(e.message.toString())
             }
@@ -226,7 +244,7 @@ class GestorMenu(
         var fechaValida = false
         while (!fechaValida){
             try {
-                fecha = ui.pedirInfo("Introduce la fecha de nacimiento", "Debes introducir una fecha de nacimiento válida", ::verificarFecha)
+                fecha = ui.pedirInfo("Introduce la fecha de nacimiento (DD/MM/AAAA)", "Debes introducir una fecha de nacimiento válida (Hasta 125 años)", ::verificarFecha)
 
                 fechaValida = true
             } catch (e: Exception){
@@ -248,47 +266,59 @@ class GestorMenu(
     /** Crea un nuevo seguro de hogar solicitando los datos al usuario */
     fun contratarSeguroHogar() {
         gestorSeguros.contratarSeguroHogar(pedirDni(), pedirImporte(), ui.pedirValorDouble("Introduce los m² del Hogar"), ui.pedirValorDouble("Introduce el valor contenido del Hogar"), ui.pedirCadena("Introduce la dirección del Hogar"), ui.pedirAnio("Introduce el año de construcción"))
+
+        ui.mostrar("Se ha contratado el SeguroHogar correctamente.",pausa = true)
     }
 
     /** Crea un nuevo seguro de auto solicitando los datos al usuario */
     fun contratarSeguroAuto() {
         gestorSeguros.contratarSeguroAuto(pedirDni(), pedirImporte(), ui.pedirCadena("Introduce la descripción del Auto"),ui.pedirValorDouble("Introduce el combustible del Auto"), pedirTipoAuto(), pedirCobertura(), ui.preguntar("¿Tiene asistencia en carretera?"),ui.pedirValorInt("Introduce el número de partes del auto"))
+
+        ui.mostrar("Se ha contratado el SeguroAuto correctamente.",pausa = true)
     }
 
     /** Crea un nuevo seguro de vida solicitando los datos al usuario */
     fun contratarSeguroVida() {
         gestorSeguros.contratarSeguroVida(pedirDni(), pedirImporte(), pedirFechaDeNacimiento(), pedirNivelRiesgo(), ui.pedirValorDouble("Introduce la indemnzación del seguro"))
+
+        ui.mostrar("Se ha contratado el SeguroVida correctamente.",pausa = true)
     }
 
     /** Elimina un seguro si existe por su número de póliza */
     fun eliminarSeguro() {
-        if (gestorSeguros.eliminarSeguro(ui.pedirEntero("Introduce el número de poliza a eliminar", "No hay ningún usuario con ese número de poliza", "Debes introducir un número de póliza existente", {it > 0}))) ui.mostrar("Usuario eliminado correctamente") else ui.mostrarError("No se ha podido eliminar un usuario")
+        if (gestorSeguros.eliminarSeguro(ui.pedirEntero("Introduce el número de poliza a eliminar", "No hay ningún usuario con ese número de poliza", "Debes introducir un número de póliza existente", {it > 0}))) ui.mostrar("Seguro eliminado correctamente", pausa = true) else ui.mostrarError("No se ha podido eliminar el seguro (No existe)")
     }
 
     /** Muestra todos los seguros existentes */
     fun consultarSeguros() {
-        gestorSeguros.consultarTodos()
+        val lista = gestorSeguros.consultarTodos()
+        if (lista.isEmpty()) ui.mostrar("No hay seguros existentes", pausa = true) else ui.mostrarListado("Lista de Seguros", lista)
     }
 
     /** Muestra todos los seguros de tipo hogar */
     fun consultarSegurosHogar() {
-        gestorSeguros.consultarPorTipo("SeguroHogar")
+        val lista = gestorSeguros.consultarPorTipo("SeguroHogar")
+        if (lista.isEmpty()) ui.mostrar("No hay SegurosHogar existentes", pausa = true) else ui.mostrarListado("Lista de SegurosHogar", lista)
+
     }
 
     /** Muestra todos los seguros de tipo auto */
     fun consultarSegurosAuto() {
-        gestorSeguros.consultarPorTipo("SeguroAuto")
+        val lista = gestorSeguros.consultarPorTipo("SeguroAuto")
+        if (lista.isEmpty()) ui.mostrar("No hay SegurosAuto existentes", pausa = true) else ui.mostrarListado("Lista de SegurosAuto", lista)
     }
 
     /** Muestra todos los seguros de tipo vida */
     fun consultarSegurosVida() {
-        gestorSeguros.consultarPorTipo("SegurVida")
+        val lista = gestorSeguros.consultarPorTipo("SeguroVida")
+        if (lista.isEmpty()) ui.mostrar("No hay SegurosVida existentes", pausa = true) else ui.mostrarListado("Lista de SegurosVida",lista)
+
     }
 
     companion object {
         val patronClave = "^[A-Za-z0-9]{4,}$".toRegex()
         val patronDNI = "^\\d{8}[A-Z]$".toRegex()
-        val patronFormatoFecha = "^\\d{2}/\\d{2}/\\d{2}$".toRegex()
+        val patronFormatoFecha = "^\\d{2}/\\d{2}/\\d{4}$".toRegex()
         val formatoFecha = "dd/MM/yyyy"
     }
 }

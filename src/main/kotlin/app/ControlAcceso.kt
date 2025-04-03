@@ -44,11 +44,13 @@ class ControlAcceso(
      * @return Un par (nombreUsuario, perfil) si el acceso fue exitoso, o `null` si el usuario cancela el acceso.
      */
     fun autenticar(): Pair<String, Perfil>? {
-        var par: Pair<String, Perfil>? = null
+        val par: Pair<String, Perfil>?
         if (verificarFicheroUsuarios()) {
             par = iniciarSesion()
+            if (par != null) ui.mostrar("Se ha iniciado sesión correctamente", pausa = true)
         } else {
-            par = crearAdminInicial()
+            par = if(ui.preguntar("¿Quieres crear un usuario ADMIN inicial?")) crearAdminInicial() else null
+            if (par != null) ui.mostrar("Se ha creado correctamente el Usuario ADMIN inicial", pausa = true)
         }
 
         return par
@@ -66,10 +68,12 @@ class ControlAcceso(
      *         `false` si el usuario cancela la creación inicial o ocurre un error.
      */
     private fun verificarFicheroUsuarios(): Boolean {
-        return if (ficheros.existeFichero(rutaArchivo) && ficheros.leerArchivo(rutaArchivo).isEmpty()) {
-            ui.preguntar("¿Quieres crear un usuario ADMIN inicial?")
+        return if (!ficheros.existeFichero(rutaArchivo) || ficheros.leerArchivo(rutaArchivo).isEmpty()) {
+            ui.mostrar("EL fichero no existe o está vacío.")
+            false
         } else true
     }
+
 
     /**
      * Solicita al usuario sus credenciales (usuario y contraseña) en un bucle hasta

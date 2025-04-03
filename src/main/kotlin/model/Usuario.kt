@@ -18,4 +18,8 @@ class Usuario(val nombre: String, clave: String, val perfil: Perfil) : IExportab
             return Usuario(datos[0], datos[1], Perfil.getPerfil(datos[2]))
         }
     }
+
+    override fun toString(): String {
+        return "Usuario(nombre = $nombre, clave = $clave, perfil = $perfil)"
+    }
 }
