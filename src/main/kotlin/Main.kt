@@ -66,7 +66,7 @@ fun main() {
     if (autenticacion != null) {
         val menu = GestorMenu(autenticacion.first, autenticacion.second, ui, gestorUsuarios, gestorSeguros)
         menu.iniciarMenu(0)
-    }
+    } else ui.mostrarError("No se ha podido autenticar", pausa = true)
 
     ui.limpiarPantalla()
     ui.mostrar("FIN DEL PROGRAMA")
