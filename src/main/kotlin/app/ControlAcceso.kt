@@ -46,15 +46,13 @@ class ControlAcceso(
     fun autenticar(): Pair<String, Perfil>? {
         val par: Pair<String, Perfil>?
 
-        if (gestorUsuarios.consultarTodos().isEmpty() || !verificarFicheroUsuarios()) {
-            ui.mostrar("No hay datos existentes.")
-            par = if(ui.preguntar("¿Quieres crear un usuario ADMIN inicial?")) crearAdminInicial() else null
-            if (par != null) ui.mostrar("Se ha creado correctamente el Usuario ADMIN inicial", pausa = true)
-        } else if (verificarFicheroUsuarios()) {
+        if (verificarFicheroUsuarios()) {
             ui.mostrar("Se han encontrado datos existentes.")
             par = iniciarSesion()
-            if (par != null) ui.mostrar("Se ha iniciado sesión correctamente", pausa = true)
-        } else par = null
+
+        } else return null
+
+        if (par != null) ui.mostrar("Se ha iniciado sesión correctamente", pausa = true)
 
         return par
     }
@@ -71,15 +69,16 @@ class ControlAcceso(
      *         `false` si el usuario cancela la creación inicial o ocurre un error.
      */
     private fun verificarFicheroUsuarios(): Boolean {
-        return if (!ficheros.existeFichero(rutaArchivo)) {
-            ui.mostrar("EL fichero no existe")
-            false
-        }
-        else if (ficheros.leerArchivo(rutaArchivo).isEmpty()){
-            ui.mostrar("El fichero está vacío.")
-            false
-        }
-        else true
+        return if (!ficheros.existeFichero(rutaArchivo) ||ficheros.leerArchivo(rutaArchivo).isEmpty()) {
+            ui.mostrar("El fichero no existe o está vacío.")
+
+            if(ui.preguntar("¿Quieres crear un usuario ADMIN inicial?")) {
+                val admin = crearAdminInicial()
+                if (admin == null) false else true
+
+            }  else false
+
+        } else false
     }
 
 
@@ -127,6 +126,7 @@ class ControlAcceso(
                 if (gestorUsuarios.agregarUsuario(nombreUsuario, clave, Perfil.ADMIN)) {
                     todoCorrecto = true
                     admin = Pair(nombreUsuario, Perfil.ADMIN)
+                    ui.mostrar("Se ha creado correctamente el Usuario ADMIN inicial", pausa = true)
                 }
                 else {
                     throw IllegalArgumentException("El usuario no se ha podido crear")

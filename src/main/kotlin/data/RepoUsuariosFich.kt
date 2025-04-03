@@ -12,7 +12,7 @@ class RepoUsuariosFich(private val rutaArchivo: String, private val fich: IUtilF
         if (usuariosCargados.isEmpty()) return false
 
         usuariosCargados.forEach {
-            listaUsuarios.add(Usuario.crearUsuario(it.split(";")))
+            super.agregar(Usuario.crearUsuario(it.split(";")))
         }
         return true
     }
