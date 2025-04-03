@@ -89,7 +89,7 @@ class ControlAcceso(
         var todoCorrecto = false
         while (!todoCorrecto){
             try {
-                var nombreUsuario = ui.pedirInfo("Introduce el nombre del usuario", "Nombre introducido no existente", { nombre -> gestorUsuarios.buscarUsuario(nombre) != null })
+                var nombreUsuario = ui.pedirInfo("Inicio de sesión:\nIntroduce el nombre del usuario", "Usuario introducido no existente", { nombre -> gestorUsuarios.buscarUsuario(nombre) != null })
                 val perfil = verificarSesion(nombreUsuario)
                 if (perfil == null){
                     return null
@@ -137,7 +137,7 @@ class ControlAcceso(
         var perfil: Perfil? = null
         do {
             try {
-                perfil = gestorUsuarios.iniciarSesion(nombreUsuario, ui.pedirInfoOculta("Introduce la clave del usuario"))
+                perfil = gestorUsuarios.iniciarSesion(nombreUsuario, ui.pedirInfoOculta("Introduce la clave del usuario >>"))
                 if (perfil == null) {
                     throw IllegalArgumentException("Clave incorrecta")
                 }

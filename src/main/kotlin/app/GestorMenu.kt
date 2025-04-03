@@ -103,7 +103,11 @@ class GestorMenu(
 
     /** Elimina un usuario si existe */
     fun eliminarUsuario() {
-        if (gestorUsuarios.eliminarUsuario(ui.pedirInfo("Introduce el nombre del usuario a eliminar"))) ui.mostrar("Usuario eliminado correctamente", pausa = true) else ui.mostrarError("No se ha podido eliminar el usuario")
+        val nombre = ui.pedirInfo("Introduce el nombre del usuario a eliminar")
+        if (nombre == nombreUsuario) ui.mostrarError("No se puede eliminar el usuario actual") else {
+            if (gestorUsuarios.eliminarUsuario(nombre)) ui.mostrar("Usuario eliminado correctamente", pausa = true) else ui.mostrarError("No se ha podido eliminar el usuario")
+        }
+
     }
 
     /** Cambia la contraseña del usuario actual */
@@ -147,6 +151,10 @@ class GestorMenu(
         if (lista.isEmpty()) ui.mostrar("No hay $nombreLista existentes", pausa = true) else ui.mostrarListado("Lista de $nombreLista", lista)
     }
 
+    private fun pedirNumPoliza(): Int{
+        return ui.pedirEntero("Introduce el número de poliza a eliminar", "No hay ningún seguro con ese número de poliza","Debes introducir un número de póliza existente", {it >= 0})
+    }
+
     /**
      * Solicita al usuario un DNI y verifica que tenga el formato correcto: 8 dígitos seguidos de una letra.
      *
@@ -172,14 +180,14 @@ class GestorMenu(
      * @return El valor introducido como `Double` si es válido.
      */
     private fun pedirImporte(): Double{
-        var importe = 0.0
+        var importe: Double? = null
         do {
             try {
-                importe = ui.pedirDouble("Introduce un importe positivo", "El importe no puede ser negativo", "Debes introducir un número decimal positivo", {it >= 0.0})
+                importe = ui.pedirValorDouble("Introduce un importe positivo", "El importe no puede ser negativo", {it >= 0.0})
             } catch (e: Exception){
                 ui.mostrarError(e.message.toString())
             }
-        } while (importe < 0)
+        } while (importe == null)
         return importe
     }
 
@@ -265,28 +273,41 @@ class GestorMenu(
 
     /** Crea un nuevo seguro de hogar solicitando los datos al usuario */
     fun contratarSeguroHogar() {
-        gestorSeguros.contratarSeguroHogar(pedirDni(), pedirImporte(), ui.pedirValorDouble("Introduce los m² del Hogar"), ui.pedirValorDouble("Introduce el valor contenido del Hogar"), ui.pedirCadena("Introduce la dirección del Hogar"), ui.pedirAnio("Introduce el año de construcción"))
+        gestorSeguros.contratarSeguroHogar(pedirDni(), pedirImporte(), ui.pedirValorDouble("Introduce los m² del Hogar", "El valor no puede ser <= 0",{it > 0.0}), ui.pedirValorDouble("Introduce el valor contenido del Hogar", "El valor no puede ser negativo", {it >= 0.0}), ui.pedirCadena("Introduce la dirección del Hogar"), ui.pedirAnio("Introduce el año de construcción"))
 
         ui.mostrar("Se ha contratado el SeguroHogar correctamente.",pausa = true)
     }
 
     /** Crea un nuevo seguro de auto solicitando los datos al usuario */
     fun contratarSeguroAuto() {
-        gestorSeguros.contratarSeguroAuto(pedirDni(), pedirImporte(), ui.pedirCadena("Introduce la descripción del Auto"),ui.pedirValorDouble("Introduce el combustible del Auto"), pedirTipoAuto(), pedirCobertura(), ui.preguntar("¿Tiene asistencia en carretera?"),ui.pedirValorInt("Introduce el número de partes del auto"))
+        gestorSeguros.contratarSeguroAuto(pedirDni(), pedirImporte(), ui.pedirCadena("Introduce la descripción del Auto"),ui.pedirValorDouble("Introduce el combustible del Auto", "El valor no puede ser negativo", {it >= 0.0}), pedirTipoAuto(), pedirCobertura(), ui.preguntar("¿Tiene asistencia en carretera?"),ui.pedirValorInt("Introduce el número de partes del auto", "El valor no puede ser <= 0",{it > 0}))
 
         ui.mostrar("Se ha contratado el SeguroAuto correctamente.",pausa = true)
     }
 
     /** Crea un nuevo seguro de vida solicitando los datos al usuario */
     fun contratarSeguroVida() {
-        gestorSeguros.contratarSeguroVida(pedirDni(), pedirImporte(), pedirFechaDeNacimiento(), pedirNivelRiesgo(), ui.pedirValorDouble("Introduce la indemnzación del seguro"))
+        gestorSeguros.contratarSeguroVida(pedirDni(), pedirImporte(), pedirFechaDeNacimiento(), pedirNivelRiesgo(), ui.pedirValorDouble("Introduce la indemnzación del seguro", "El valor no puede ser <= 0", {it > 0.0}))
 
         ui.mostrar("Se ha contratado el SeguroVida correctamente.",pausa = true)
     }
 
     /** Elimina un seguro si existe por su número de póliza */
     fun eliminarSeguro() {
-        if (gestorSeguros.eliminarSeguro(ui.pedirEntero("Introduce el número de poliza a eliminar", "No hay ningún usuario con ese número de poliza", "Debes introducir un número de póliza existente", {it > 0}))) ui.mostrar("Seguro eliminado correctamente", pausa = true) else ui.mostrarError("No se ha podido eliminar el seguro (No existe)")
+        var numPoliza = 0
+        var realizado = false
+        do {
+            try {
+                numPoliza = pedirNumPoliza()
+                if (gestorSeguros.eliminarSeguro(numPoliza)) ui.mostrar("Seguro eliminado correctamente", pausa = true) else ui.mostrarError("No se ha podido eliminar el seguro (No existe)")
+                realizado = true
+            } catch (e: Exception) {
+                ui.mostrarError(e.message.toString())
+                if (ui.preguntar("¿Quieres cancelar el proceso?")) return
+            }
+        } while (!realizado)
+
+
     }
 
     /** Muestra todos los seguros existentes */

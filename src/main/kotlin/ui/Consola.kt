@@ -122,27 +122,27 @@ class Consola : IEntradaSalida {
         return it in listOf("s","n")
     }
 
-    override fun pedirValorDouble(msj: String): Double{
-        var valor = 0.0
+    override fun pedirValorDouble(msj: String, error: String,debeCumplir: (Double) -> Boolean): Double{
+        var valor: Double? = null
         do {
             try {
-                valor = pedirDouble(msj, "El valor no puede ser negativo", "Debes introducir un número decimal positivo", {it >= 0.0})
+                valor = pedirDouble(msj, "El valor no puede ser negativo", "Debes introducir un número decimal", debeCumplir)
             } catch (e: Exception){
                 mostrarError(e.message.toString())
             }
-        } while (valor < 0)
+        } while (valor == null)
         return valor
     }
 
-    override fun pedirValorInt(msj: String): Int{
-        var valor = 0
+    override fun pedirValorInt(msj: String, error: String,debeCumplir: (Int) -> Boolean): Int{
+        var valor: Int? = null
         do {
             try {
-                valor = pedirEntero(msj, "El valor no puede ser negativo", "Debes introducir un número entere¡o positivo", {it >= 0})
+                valor = pedirEntero(msj, "El valor no puede ser negativo", "Debes introducir un número entero", debeCumplir)
             } catch (e: Exception){
                 mostrarError(e.message.toString())
             }
-        } while (valor < 0)
+        } while (valor == null)
         return valor
     }
 

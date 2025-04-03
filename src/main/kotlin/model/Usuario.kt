@@ -20,6 +20,6 @@ class Usuario(val nombre: String, clave: String, val perfil: Perfil) : IExportab
     }
 
     override fun toString(): String {
-        return "Usuario(nombre = $nombre, clave = $clave, perfil = $perfil)"
+        return "Usuario(nombre=$nombre, clave=$clave, perfil=$perfil)"
     }
 }

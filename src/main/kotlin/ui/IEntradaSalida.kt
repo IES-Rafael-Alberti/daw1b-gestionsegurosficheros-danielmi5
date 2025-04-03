@@ -13,7 +13,7 @@ interface IEntradaSalida {
     fun limpiarPantalla(numSaltos: Int = 20)
     fun preguntar(mensaje: String): Boolean
     fun pedirCadena(msj: String): String
-    fun pedirValorDouble(msj: String): Double
-    fun pedirValorInt(msj: String): Int
+    fun pedirValorDouble(msj: String, error: String,debeCumplir: (Double) -> Boolean): Double
+    fun pedirValorInt(msj: String, error: String, debeCumplir: (Int) -> Boolean): Int
     fun pedirAnio(msj: String): Int
 }

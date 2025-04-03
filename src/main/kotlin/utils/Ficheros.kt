@@ -28,7 +28,7 @@ class Ficheros(private val ui: IEntradaSalida) : IUtilFicheros {
     override fun agregarLinea(ruta: String, linea: String): Boolean {
         return try {
             val file = File(ruta)
-            file.appendText(linea + "\n")
+            file.appendText("$linea\n")
             true
         } catch (e: Exception) {
             ui.mostrarError(e.message.toString())
@@ -39,8 +39,9 @@ class Ficheros(private val ui: IEntradaSalida) : IUtilFicheros {
     override fun <T : IExportable> escribirArchivo(ruta: String, elementos: List<T>): Boolean {
         try {
             val file = File(ruta)
+            file.writeText("")
             elementos.forEach {
-                file.writeText(it.serializar(";"))
+                agregarLinea(ruta, it.serializar(";"))
             }
         } catch (e: Exception) {
             ui.mostrarError(e.message.toString())
